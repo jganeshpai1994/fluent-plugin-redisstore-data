@@ -23,13 +23,18 @@ module Fluent
       @key_suffix = conf.has_key?('key_suffix') ? conf['key_suffix'] : ''
       @store_type = conf.has_key?('store_type') ? conf['store_type'] : 'zset'
       @key_name = conf['key_name']
-      @fixed_key_value = conf.has_key?('fixed_key_value') ? conf['fixed_key_value'] : nil
+      #@fixed_key_value = conf.has_key?('fixed_key_value') ? conf['fixed_key_value'] : nil
+      @fixed_key_value = conf['fixed_key_value']
       @score_name = conf['score_name']
       @value_name = conf['value_name']
       @key_expire = conf.has_key?('key_expire') ? conf['key_expire'].to_i : -1
       @value_expire = conf.has_key?('value_expire') ? conf['value_expire'].to_i : -1
       @value_length = conf.has_key?('value_length') ? conf['value_length'].to_i : -1
       @order = conf.has_key?('order') ? conf['order'] : 'asc'
+
+      puts conf
+      puts 'Key_name: '+@key_name.to_s
+      puts 'Fixed_key_name: '+@fixed_key_name.to_s
     end
 
     def start
@@ -120,9 +125,9 @@ module Fluent
       if @fixed_key_value
         k = @fixed_key_value
       else
-        k = traverse(record, @key_name).to_s
+        k = @key_name
       end
-      v = traverse(record, @value_name)
+      #v = traverse(record, @value_name)
       sk = @key_prefix + k + @key_suffix
 
       @redis.sadd sk, v
@@ -158,15 +163,12 @@ module Fluent
       if @fixed_key_value
         k = @fixed_key_value
       else
-        k = traverse(record, @key_name).to_s
-      end
-      v = traverse(record, @value_name)
-      sk = @key_prefix + k + @key_suffix
+        k = @key_name
 
-      @redis.set sk, v
-      if @key_expire > 0
-        @redis.expire sk, @key_expire
       end
+      sk = @key_prefix + k + @key_suffix
+      data = record.to_s
+      @redis.set record[sk],data
     end
 
     def generate_zremrangebyrank_script(key, maxlen, order)
