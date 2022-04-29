@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |gem|
-    gem.name        = "fluent-plugin-redisstore"
+    gem.name        = "fluent-plugin-redisstore-data"
     gem.version     = "0.0.4"
     gem.authors     = ["moaikids"]
     gem.licenses    = ["Apache License Version 2.0"]
